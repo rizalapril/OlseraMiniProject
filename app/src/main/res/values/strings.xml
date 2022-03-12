@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">OlseraMiniProject</string>
+    <string name="header_bar">Company &amp; Locations</string>
+    <string name="filter_all_status">All Status</string>
+    <string name="filter_active">Active</string>
+    <string name="filter_inactive">Inactive</string>
+
 </resources>
