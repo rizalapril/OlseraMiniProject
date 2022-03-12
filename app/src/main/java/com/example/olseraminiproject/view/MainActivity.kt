@@ -7,7 +7,9 @@ import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.ViewFlipper
 import androidx.activity.result.contract.ActivityResultContracts
@@ -15,6 +17,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -23,11 +26,15 @@ import com.example.olseraminiproject.base.BaseActivity
 import com.example.olseraminiproject.data.dataclass.CompanyDataClass
 import com.example.olseraminiproject.util.Constants
 import com.example.olseraminiproject.util.PermissionUtil
+import com.example.olseraminiproject.view.adapter.ActiveStatusAdapter
 import com.example.olseraminiproject.view.adapter.AllStatusAdapter
+import com.example.olseraminiproject.view.adapter.InactiveStatusAdapter
 import com.example.olseraminiproject.viewmodel.MainViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class MainActivity : BaseActivity() {
@@ -35,6 +42,8 @@ class MainActivity : BaseActivity() {
     private val viewModel by viewModel<MainViewModel>()
 
     private lateinit var allStatusAdapter: AllStatusAdapter
+    private lateinit var activeStatusAdapter: ActiveStatusAdapter
+    private lateinit var inactiveStatusAdapter: InactiveStatusAdapter
 
     var vfMainPage: ViewFlipper? = null
     var btnAddNew: FloatingActionButton? = null
@@ -51,12 +60,16 @@ class MainActivity : BaseActivity() {
     var txtCountFilterInactiveStatus: TextView? = null
 
     var recycleAllStatus: RecyclerView? = null
+    var progressBarAllStatus: ProgressBar? = null
+    var recycleActiveStatus: RecyclerView? = null
+    var progressBarActiveStatus: ProgressBar? = null
+    var recycleInactiveStatus: RecyclerView? = null
+    var progressBarInactiveStatus: ProgressBar? = null
 
     var fusedLocationClient: FusedLocationProviderClient? = null
-    var locationManager: LocationManager? = null
-    var lastLocation: Location? = null
     var latitude = "0.0"
     var longitude = "0.0"
+    private var isLoading = false
 
     override fun getLayoutResourceId(): Int = R.layout.activity_main
 
@@ -79,12 +92,23 @@ class MainActivity : BaseActivity() {
         txtCountFilterInactiveStatus = findViewById<TextView>(R.id.txtCountFilterInactiveStatus)
 
         recycleAllStatus = findViewById<RecyclerView>(R.id.recycleAllStatus)
+        progressBarAllStatus = findViewById<ProgressBar>(R.id.progressBarAllStatus)
+        recycleActiveStatus = findViewById<RecyclerView>(R.id.recycleActiveStatus)
+        progressBarActiveStatus = findViewById<ProgressBar>(R.id.progressBarActiveStatus)
+        recycleInactiveStatus = findViewById<RecyclerView>(R.id.recycleInactiveStatus)
+        progressBarInactiveStatus = findViewById<ProgressBar>(R.id.progressBarInactiveStatus)
 
         //adapter
         allStatusAdapter = AllStatusAdapter(applicationContext, this)
         recycleAllStatus?.adapter = allStatusAdapter
+        activeStatusAdapter = ActiveStatusAdapter(applicationContext, this)
+        recycleActiveStatus?.adapter = activeStatusAdapter
+        inactiveStatusAdapter = InactiveStatusAdapter(applicationContext, this)
+        recycleInactiveStatus?.adapter = inactiveStatusAdapter
 
         recycleAllStatus?.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        recycleActiveStatus?.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        recycleInactiveStatus?.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
         getPermission()
 
@@ -106,22 +130,88 @@ class MainActivity : BaseActivity() {
         btnInactiveStatus?.setOnClickListener { v->
             selectedView(3)
         }
+
+        recycleAllStatus?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                if (!recyclerView.canScrollVertically(1)) {
+                    if (!isLoading){
+                        getMoreAllStatus(false)
+                    }
+                }
+            }
+        })
+
+        recycleActiveStatus?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                if (!recyclerView.canScrollVertically(1)) {
+                    if (!isLoading){
+                        getMoreActiveStatus(false)
+                    }
+                }
+            }
+        })
+
+        recycleInactiveStatus?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                if (!recyclerView.canScrollVertically(1)) {
+                    if (!isLoading){
+                        getMoreInactiveStatus(false)
+                    }
+                }
+            }
+        })
     }
 
     override fun initObserver() {
         viewModel.resultAllList.observe(this, Observer { result ->
-            txtCountFilterAllStatus?.text = "(${result.size})"
+            isLoading = false
+            progressBarAllStatus?.visibility = View.GONE
             if (result.size > 0) {
-                allStatusAdapter?.swap(result as ArrayList<CompanyDataClass>)
+                allStatusAdapter.addList(result as ArrayList<CompanyDataClass>)
             }else{
-
             }
+            txtCountFilterAllStatus?.text = "(${allStatusAdapter.itemCount})"
+
+        })
+
+        viewModel.resultActiveList.observe(this, Observer { result ->
+            isLoading = false
+            progressBarActiveStatus?.visibility = View.GONE
+            if (result.size > 0) {
+                activeStatusAdapter?.addList(result as ArrayList<CompanyDataClass>)
+            }else{
+            }
+            txtCountFilterActiveStatus?.text = "(${activeStatusAdapter.itemCount})"
+
+        })
+
+        viewModel.resultInactiveList.observe(this, Observer { result ->
+            isLoading = false
+            progressBarInactiveStatus?.visibility = View.GONE
+            if (result.size > 0) {
+                inactiveStatusAdapter?.addList(result as ArrayList<CompanyDataClass>)
+            }else{
+            }
+            txtCountFilterInactiveStatus?.text = "(${inactiveStatusAdapter.itemCount})"
+
         })
     }
 
     override fun onBackPressed() {
         super.onBackPressed()
         finish()
+    }
+
+    override fun onResume() {
+        viewModel.loadData()
+        allStatusAdapter?.clear()
+        activeStatusAdapter?.clear()
+        inactiveStatusAdapter?.clear()
+
+        super.onResume()
     }
 
     fun selectedView(code: Int){
@@ -156,6 +246,51 @@ class MainActivity : BaseActivity() {
                 btnInactiveStatus?.background = ContextCompat.getDrawable(this, R.drawable.bg_round_selected_filter_right)
                 vfMainPage?.displayedChild = 2
             }
+        }
+    }
+
+    private fun getMoreAllStatus(isOnRefresh: Boolean) {
+        isLoading = true
+
+        if (!isOnRefresh){
+            progressBarAllStatus?.visibility = View.VISIBLE
+        }
+
+        val offset = allStatusAdapter.itemCount
+
+        val limit = 15
+        lifecycleScope.launch(Dispatchers.IO){
+            viewModel.getMoreAllData(limit, offset)
+        }
+    }
+
+    private fun getMoreActiveStatus(isOnRefresh: Boolean) {
+        isLoading = true
+
+        if (!isOnRefresh){
+            progressBarActiveStatus?.visibility = View.VISIBLE
+        }
+
+        val offset = activeStatusAdapter.itemCount
+
+        val limit = 15
+        lifecycleScope.launch(Dispatchers.IO){
+            viewModel.getMoreActiveData(limit, offset)
+        }
+    }
+
+    private fun getMoreInactiveStatus(isOnRefresh: Boolean) {
+        isLoading = true
+
+        if (!isOnRefresh){
+            progressBarInactiveStatus?.visibility = View.VISIBLE
+        }
+
+        val offset = inactiveStatusAdapter.itemCount
+
+        val limit = 15
+        lifecycleScope.launch(Dispatchers.IO){
+            viewModel.getMoreInactiveData(limit, offset)
         }
     }
 
@@ -199,6 +334,7 @@ class MainActivity : BaseActivity() {
 
     fun editCompany(id: Int){
         val intent = Intent(this, DetailsActivity::class.java)
+        intent.putExtra("isedit", true)
         intent.putExtra("id", id)
         resultActivity.launch(intent)
     }

@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.DetailsActivity">
+    tools:context=".view.DetailsActivity"
+    android:background="@color/white">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/headerLyt"
@@ -353,10 +354,11 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:padding="10dp"
                     android:text="Delete"
                     android:fontFamily="sans-serif"
                     android:textSize="16sp"
-                    android:textColor="@color/black"/>
+                    android:textColor="@color/white"/>
             </LinearLayout>
 
             <FrameLayout

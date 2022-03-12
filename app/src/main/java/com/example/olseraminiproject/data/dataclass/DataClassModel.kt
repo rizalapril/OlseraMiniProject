@@ -17,5 +17,7 @@ data class CompanyDataClass(
     var postalcode: String = "",
     var latitude: String = "",
     var longitude: String = "",
-    var status: Boolean = false
+    var status: Boolean = false,
+    var txtStatus: String = "",
+    var isMod: Boolean = false
 )

@@ -8,15 +8,18 @@ interface CompanyDao {
     @Query("SELECT * FROM company")
     fun getAll(): List<Company>
 
-    @Query("SELECT * FROM company LIMIT :limit OFFSET :offset")
+    @Query("SELECT * FROM company ORDER BY id ASC LIMIT :limit OFFSET :offset")
     fun getCompanyList(limit: Int, offset: Int): List<Company>
 
     @Query("SELECT * FROM company WHERE id=:companyId")
-    fun getCompany(companyId: String): Company
+    fun getCompany(companyId: Int): Company
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertData(company: Company)
 
-    @Delete
-    fun delete(company: Company)
+    @Query("UPDATE company SET name = :name, address = :address, city = :city, postalcode = :postalcode, latitude = :latitude, longitude = :longitude, status = :status WHERE id = :companyId")
+    suspend fun updateData(companyId: Int, name: String, address: String, city: String, postalcode: String, latitude: String, longitude: String, status: Boolean)
+
+    @Query("DELETE FROM company WHERE id = :companyId")
+    fun delete(companyId: Int)
 }

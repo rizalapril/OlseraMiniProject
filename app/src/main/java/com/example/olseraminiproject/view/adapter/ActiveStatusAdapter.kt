@@ -6,14 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.example.olseraminiproject.R
 import com.example.olseraminiproject.data.dataclass.CompanyDataClass
 import com.example.olseraminiproject.databinding.ListCompanyItemBinding
 import com.example.olseraminiproject.view.MainActivity
 
-class AllStatusAdapter(private val context: Context?, private val activity: Activity): RecyclerView.Adapter<AllStatusAdapter.VH>() {
+class ActiveStatusAdapter(private val context: Context?, private val activity: Activity): RecyclerView.Adapter<ActiveStatusAdapter.VH>() {
 
     private var dataSource: ArrayList<CompanyDataClass> = ArrayList<CompanyDataClass>()
 

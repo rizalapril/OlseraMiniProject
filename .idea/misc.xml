@@ -17,6 +17,7 @@
         <entry key="app/src/main/res/drawable/bg_round_selected_filter_right.xml" value="0.1015625" />
         <entry key="app/src/main/res/drawable/bg_select_active_status.xml" value="0.1712962962962963" />
         <entry key="app/src/main/res/drawable/gradient_bottom.xml" value="0.1712962962962963" />
+        <entry key="app/src/main/res/drawable/progress_bar_circle_background.xml" value="0.1712962962962963" />
         <entry key="app/src/main/res/layout/activity_details.xml" value="0.22" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.2611111111111111" />
         <entry key="app/src/main/res/layout/fragment_add_company.xml" value="0.1" />

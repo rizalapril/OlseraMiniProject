@@ -1,6 +1,7 @@
 package com.example.olseraminiproject.viewmodel
 
 import android.content.Context
+import android.view.View
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -21,7 +22,7 @@ class MainViewModel(
 
     fun loadData(){
         viewModelScope.launch(Dispatchers.IO) {
-            val dataList = companyRepo.getAllData()
+            val dataList = companyRepo.getLimitData(20, 0)
             if (dataList.size > 0){
                 convertIntoAllList(dataList)
                 convertIntoActiveList(dataList)
@@ -34,6 +35,7 @@ class MainViewModel(
 
     fun convertIntoAllList(list: List<Company>){
         var returnAllList = mutableListOf<CompanyDataClass>()
+        var position = 1
         for (i in list){
             var data = CompanyDataClass()
             data.id = i.id ?: 0
@@ -45,6 +47,15 @@ class MainViewModel(
             data.longitude = i.longitude
             data.status = i.status
 
+            if (!data.status) {
+                data.txtStatus = "Inactive"
+            }
+
+            if (position.mod(2)==0){
+                data.isMod = true
+            }
+
+            position++
             returnAllList.add(data)
         }
 
@@ -53,6 +64,7 @@ class MainViewModel(
 
     fun convertIntoActiveList(list: List<Company>){
         var returnAllList = mutableListOf<CompanyDataClass>()
+        var position = 1
         for (i in list){
             if (i.status){
                 var data = CompanyDataClass()
@@ -64,7 +76,15 @@ class MainViewModel(
                 data.latitude = i.latitude
                 data.longitude = i.longitude
                 data.status = i.status
+                if (!data.status) {
+                    data.txtStatus = "Inactive"
+                }
 
+                if (position.mod(2)==0){
+                    data.isMod = true
+                }
+
+                position++
                 returnAllList.add(data)
             }
         }
@@ -73,6 +93,7 @@ class MainViewModel(
 
     fun convertIntoInactiveList(list: List<Company>){
         var returnAllList = mutableListOf<CompanyDataClass>()
+        var position = 1
         for (i in list){
             if (!i.status){
                 var data = CompanyDataClass()
@@ -84,10 +105,54 @@ class MainViewModel(
                 data.latitude = i.latitude
                 data.longitude = i.longitude
                 data.status = i.status
+                if (!data.status) {
+                    data.txtStatus = "Inactive"
+                }
 
+                if (position.mod(2)==0){
+                    data.isMod = true
+                }
+
+                position++
                 returnAllList.add(data)
             }
         }
         resultInactiveList.postValue(returnAllList)
+    }
+
+    fun getMoreAllData(limit: Int, offset: Int){
+        viewModelScope.launch(Dispatchers.IO) {
+            val dataList = companyRepo.getLimitData(limit, offset)
+            if (dataList.size > 0){
+                convertIntoAllList(dataList)
+            }else{
+                var returnAllList = mutableListOf<CompanyDataClass>()
+                resultAllList.postValue(returnAllList)
+            }
+        }
+    }
+
+    fun getMoreActiveData(limit: Int, offset: Int){
+        viewModelScope.launch(Dispatchers.IO) {
+            val dataList = companyRepo.getLimitData(limit, offset)
+            if (dataList.size > 0){
+                convertIntoActiveList(dataList)
+            }else{
+                var returnAllList = mutableListOf<CompanyDataClass>()
+                resultActiveList.postValue(returnAllList)
+            }
+        }
+    }
+
+    fun getMoreInactiveData(limit: Int, offset: Int){
+        viewModelScope.launch(Dispatchers.IO) {
+            val dataList = companyRepo.getLimitData(limit, offset)
+            if (dataList.size > 0){
+                convertIntoInactiveList(dataList)
+            }else{
+                var returnAllList = mutableListOf<CompanyDataClass>()
+                resultInactiveList.postValue(returnAllList)
+            }
+        }
     }
 }

@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.widget.NestedScrollView
+import androidx.lifecycle.Observer
 import com.adevinta.leku.LocationPickerActivity
 import com.example.olseraminiproject.R
 import com.example.olseraminiproject.base.BaseActivity
@@ -26,6 +27,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.adevinta.leku.LATITUDE
 import com.adevinta.leku.LONGITUDE
 import androidx.lifecycle.lifecycleScope
+import com.example.olseraminiproject.data.dataclass.CompanyDataClass
 import com.example.olseraminiproject.util.LocationUtil
 import com.example.olseraminiproject.viewmodel.DetailsViewModel
 import kotlinx.coroutines.Dispatchers
@@ -64,6 +66,7 @@ class DetailsActivity : BaseActivity(), OnMapReadyCallback {
     var selectedStatus = true
     var latitude = "0.0"
     var longitude = "0.0"
+    var isEditMode = false
 
     var mMap: GoogleMap? = null
     var mCurrLocationMarker: Marker? = null
@@ -71,9 +74,10 @@ class DetailsActivity : BaseActivity(), OnMapReadyCallback {
     override fun getLayoutResourceId(): Int = R.layout.activity_details
 
     override fun initView(savedInstanceState: Bundle?) {
+        isEditMode = intent.extras?.getBoolean("isedit") ?: false
         val id = intent.extras?.getInt("id") ?: 0
-        latitude = intent.extras?.getString("latitude") ?: ""
-        longitude = intent.extras?.getString("longitude") ?: ""
+        latitude = intent.extras?.getString("latitude") ?: "0.0"
+        longitude = intent.extras?.getString("longitude") ?: "0.0"
 
         btnClose = findViewById<LinearLayout>(R.id.btnClose)
         btnStatusActive = findViewById<LinearLayout>(R.id.btnStatusActive)
@@ -101,7 +105,10 @@ class DetailsActivity : BaseActivity(), OnMapReadyCallback {
         miniMap = supportFragmentManager.findFragmentById(R.id.miniMap) as GoogleMapWithScrollFix
         miniMap?.getMapAsync(this)
 
-
+        if (isEditMode){
+            viewModel.loadData(id)
+            deleteButton?.visibility = View.VISIBLE
+        }
     }
 
     override fun initListener() {
@@ -132,9 +139,42 @@ class DetailsActivity : BaseActivity(), OnMapReadyCallback {
         btnSave?.setOnClickListener { v ->
             saveData()
         }
+
+        deleteButton?.setOnClickListener { v ->
+            viewModel.deleteData()
+            finish()
+        }
     }
 
     override fun initObserver() {
+        viewModel.resultData.observe(this, Observer { result ->
+            txtNameCompany?.setText("${result.name}")
+            txtAddress?.setText("${result.address}")
+            txtCity?.setText("${result.city}")
+            txtZipCode?.setText("${result.postalcode}")
+
+            latitude = result.latitude
+            longitude = result.longitude
+            setMarkerMiniMap()
+
+            if (!result.status){
+                //inactive
+                txtStatusActive?.setTextColor(ContextCompat.getColor(this, android.R.color.tab_indicator_text))
+                txtStatusInactive?.setTextColor(ContextCompat.getColor(this, R.color.white))
+                btnStatusActive?.background = ContextCompat.getDrawable(this, R.drawable.bg_left_status_default)
+                btnStatusInactive?.background = ContextCompat.getDrawable(this, R.drawable.bg_right_status_blue)
+
+                selectedStatus = false
+            }else{
+                //active
+                txtStatusActive?.setTextColor(ContextCompat.getColor(this, R.color.white))
+                txtStatusInactive?.setTextColor(ContextCompat.getColor(this, android.R.color.tab_indicator_text))
+                btnStatusActive?.background = ContextCompat.getDrawable(this, R.drawable.bg_left_status_blue)
+                btnStatusInactive?.background = ContextCompat.getDrawable(this, R.drawable.bg_right_status_default)
+
+                selectedStatus = true
+            }
+        })
     }
 
     override fun onBackPressed() {
@@ -183,7 +223,12 @@ class DetailsActivity : BaseActivity(), OnMapReadyCallback {
 
         viewModel.saveData(name, address, city, postalcode, latitude, longitude, selectedStatus)
 
-        clear()
+
+        if (isEditMode){
+            close()
+        }else{
+            clear()
+        }
     }
 
     fun clear(){

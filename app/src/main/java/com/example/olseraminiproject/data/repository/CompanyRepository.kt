@@ -9,9 +9,12 @@ import kotlinx.coroutines.launch
 
 interface CompanyRepository {
     fun initializeDB(): CompanyDatabase
-    fun getCompanyData(id: String): Company
+    fun getCompanyData(id: Int): Company
     fun getAllData(): List<Company>
+    fun getLimitData(limit: Int, offset: Int): List<Company>
     fun insertData(name: String, address: String, city: String, postalcode: String, latitude: String, longitude: String, status: Boolean)
+    fun editData(id: Int, name: String, address: String, city: String, postalcode: String, latitude: String, longitude: String, status: Boolean)
+    fun deleteData(id: Int)
 }
 class CompanyRepositoryImpl(
     private val context: Context
@@ -29,13 +32,33 @@ class CompanyRepositoryImpl(
         }
     }
 
+    override fun editData(id: Int, name: String, address: String, city: String, postalcode: String, latitude: String, longitude: String, status: Boolean) {
+        val db = initializeDB()
+        CoroutineScope(Dispatchers.IO).launch {
+            db.accessDAO().updateData(id, name, address, city, postalcode, latitude, longitude, status)
+        }
+    }
+
+    override fun deleteData(id: Int) {
+        val db = initializeDB()
+        CoroutineScope(Dispatchers.IO).launch {
+            db.accessDAO().delete(id)
+        }
+    }
+
     override fun getAllData(): List<Company> {
         val db = initializeDB()
         val data = db.accessDAO().getAll()
         return data
     }
 
-    override fun getCompanyData(id: String): Company {
+    override fun getLimitData(limit: Int, offset: Int): List<Company> {
+        val db = initializeDB()
+        val data = db.accessDAO().getCompanyList(limit, offset)
+        return data
+    }
+
+    override fun getCompanyData(id: Int): Company {
         val db = initializeDB()
         val data = db.accessDAO().getCompany(id)
         return data
