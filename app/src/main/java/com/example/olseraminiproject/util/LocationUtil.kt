@@ -30,7 +30,7 @@ object LocationUtil {
                 val postalCode = addresses.get(0).postalCode
                 val knownName = addresses.get(0).featureName
 
-                location = CustomLocation(fullAddress,subCity,city,state,country)
+                location = CustomLocation(fullAddress,subCity,city,state,country,postalCode)
             }
         }catch (e: IOException){
             Log.i(TAG, "Err: ${e}")
