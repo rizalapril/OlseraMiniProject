@@ -47,7 +47,8 @@ class MainViewModel(
 
             returnAllList.add(data)
         }
-        resultAllList.value = returnAllList
+
+        resultAllList.postValue(returnAllList)
     }
 
     fun convertIntoActiveList(list: List<Company>){
@@ -67,7 +68,7 @@ class MainViewModel(
                 returnAllList.add(data)
             }
         }
-        resultActiveList.value = returnAllList
+        resultActiveList.postValue(returnAllList)
     }
 
     fun convertIntoInactiveList(list: List<Company>){
@@ -87,6 +88,6 @@ class MainViewModel(
                 returnAllList.add(data)
             }
         }
-        resultInactiveList.value = returnAllList
+        resultInactiveList.postValue(returnAllList)
     }
 }

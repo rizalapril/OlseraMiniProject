@@ -7,15 +7,26 @@ import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.ViewFlipper
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.olseraminiproject.R
 import com.example.olseraminiproject.base.BaseActivity
+import com.example.olseraminiproject.data.dataclass.CompanyDataClass
 import com.example.olseraminiproject.util.Constants
 import com.example.olseraminiproject.util.PermissionUtil
+import com.example.olseraminiproject.view.adapter.AllStatusAdapter
 import com.example.olseraminiproject.viewmodel.MainViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.koin.android.viewmodel.ext.android.viewModel
 
@@ -23,7 +34,23 @@ class MainActivity : BaseActivity() {
 
     private val viewModel by viewModel<MainViewModel>()
 
+    private lateinit var allStatusAdapter: AllStatusAdapter
+
+    var vfMainPage: ViewFlipper? = null
     var btnAddNew: FloatingActionButton? = null
+    var btnAllStatus: LinearLayout? = null
+    var btnActiveStatus: LinearLayout? = null
+    var btnInactiveStatus: LinearLayout? = null
+
+    var txtFilterAllStatus: TextView? = null
+    var txtFilterActiveStatus: TextView? = null
+    var txtFilterInactiveStatus: TextView? = null
+
+    var txtCountFilterAllStatus: TextView? = null
+    var txtCountFilterActiveStatus: TextView? = null
+    var txtCountFilterInactiveStatus: TextView? = null
+
+    var recycleAllStatus: RecyclerView? = null
 
     var fusedLocationClient: FusedLocationProviderClient? = null
     var locationManager: LocationManager? = null
@@ -35,25 +62,101 @@ class MainActivity : BaseActivity() {
 
     override fun initView(savedInstanceState: Bundle?) {
 
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        vfMainPage = findViewById<ViewFlipper>(R.id.vfMainPage)
         btnAddNew = findViewById<FloatingActionButton>(R.id.btnAddNew)
+        btnAllStatus = findViewById<LinearLayout>(R.id.btnAllStatus)
+        btnActiveStatus = findViewById<LinearLayout>(R.id.btnActiveStatus)
+        btnInactiveStatus = findViewById<LinearLayout>(R.id.btnInactiveStatus)
+
+        txtFilterAllStatus = findViewById<TextView>(R.id.txtFilterAllStatus)
+        txtFilterActiveStatus = findViewById<TextView>(R.id.txtFilterActiveStatus)
+        txtFilterInactiveStatus = findViewById<TextView>(R.id.txtFilterInactiveStatus)
+
+        txtCountFilterAllStatus = findViewById<TextView>(R.id.txtCountFilterAllStatus)
+        txtCountFilterActiveStatus = findViewById<TextView>(R.id.txtCountFilterActiveStatus)
+        txtCountFilterInactiveStatus = findViewById<TextView>(R.id.txtCountFilterInactiveStatus)
+
+        recycleAllStatus = findViewById<RecyclerView>(R.id.recycleAllStatus)
+
+        //adapter
+        allStatusAdapter = AllStatusAdapter(applicationContext, this)
+        recycleAllStatus?.adapter = allStatusAdapter
+
+        recycleAllStatus?.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
         getPermission()
 
         viewModel.loadData()
+        selectedView(1)
     }
 
     override fun initListener() {
         btnAddNew?.setOnClickListener { v->
             openDetails()
         }
+
+        btnAllStatus?.setOnClickListener { v->
+            selectedView(1)
+        }
+        btnActiveStatus?.setOnClickListener { v->
+            selectedView(2)
+        }
+        btnInactiveStatus?.setOnClickListener { v->
+            selectedView(3)
+        }
     }
 
     override fun initObserver() {
+        viewModel.resultAllList.observe(this, Observer { result ->
+            txtCountFilterAllStatus?.text = "(${result.size})"
+            if (result.size > 0) {
+                allStatusAdapter?.swap(result as ArrayList<CompanyDataClass>)
+            }else{
+
+            }
+        })
     }
 
     override fun onBackPressed() {
         super.onBackPressed()
         finish()
+    }
+
+    fun selectedView(code: Int){
+        txtFilterAllStatus?.setTextColor(ContextCompat.getColor(this, R.color.black))
+        txtFilterActiveStatus?.setTextColor(ContextCompat.getColor(this, R.color.black))
+        txtFilterInactiveStatus?.setTextColor(ContextCompat.getColor(this, R.color.black))
+
+        txtCountFilterAllStatus?.setTextColor(ContextCompat.getColor(this, R.color.black))
+        txtCountFilterActiveStatus?.setTextColor(ContextCompat.getColor(this, R.color.black))
+        txtCountFilterInactiveStatus?.setTextColor(ContextCompat.getColor(this, R.color.black))
+
+        btnAllStatus?.setBackgroundColor(ContextCompat.getColor(this, R.color.transparent))
+        btnActiveStatus?.setBackgroundColor(ContextCompat.getColor(this, R.color.transparent))
+        btnInactiveStatus?.setBackgroundColor(ContextCompat.getColor(this, R.color.transparent))
+
+        when(code){
+            1 ->{
+                txtFilterAllStatus?.setTextColor(ContextCompat.getColor(this, R.color.green))
+                txtCountFilterAllStatus?.setTextColor(ContextCompat.getColor(this, R.color.green))
+                btnAllStatus?.background = ContextCompat.getDrawable(this, R.drawable.bg_round_selected_filter_left)
+                vfMainPage?.displayedChild = 0
+            }
+            2 ->{
+                txtFilterActiveStatus?.setTextColor(ContextCompat.getColor(this, R.color.green))
+                txtCountFilterActiveStatus?.setTextColor(ContextCompat.getColor(this, R.color.green))
+                btnActiveStatus?.setBackgroundColor(ContextCompat.getColor(this, R.color.teal))
+                vfMainPage?.displayedChild = 1
+            }
+            3 ->{
+                txtFilterInactiveStatus?.setTextColor(ContextCompat.getColor(this, R.color.green))
+                txtCountFilterInactiveStatus?.setTextColor(ContextCompat.getColor(this, R.color.green))
+                btnInactiveStatus?.background = ContextCompat.getDrawable(this, R.drawable.bg_round_selected_filter_right)
+                vfMainPage?.displayedChild = 2
+            }
+        }
     }
 
     fun getPermission(){
@@ -91,6 +194,12 @@ class MainActivity : BaseActivity() {
         val intent = Intent(this, DetailsActivity::class.java)
         intent.putExtra("latitude", latitude)
         intent.putExtra("longitude", longitude)
+        resultActivity.launch(intent)
+    }
+
+    fun editCompany(id: Int){
+        val intent = Intent(this, DetailsActivity::class.java)
+        intent.putExtra("id", id)
         resultActivity.launch(intent)
     }
 

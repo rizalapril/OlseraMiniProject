@@ -71,6 +71,7 @@ class DetailsActivity : BaseActivity(), OnMapReadyCallback {
     override fun getLayoutResourceId(): Int = R.layout.activity_details
 
     override fun initView(savedInstanceState: Bundle?) {
+        val id = intent.extras?.getInt("id") ?: 0
         latitude = intent.extras?.getString("latitude") ?: ""
         longitude = intent.extras?.getString("longitude") ?: ""
 
@@ -99,6 +100,7 @@ class DetailsActivity : BaseActivity(), OnMapReadyCallback {
 
         miniMap = supportFragmentManager.findFragmentById(R.id.miniMap) as GoogleMapWithScrollFix
         miniMap?.getMapAsync(this)
+
 
     }
 
