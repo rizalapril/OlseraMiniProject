@@ -33,6 +33,10 @@ import com.example.olseraminiproject.viewmodel.DetailsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.android.viewmodel.ext.android.viewModel
+import android.view.MotionEvent
+
+
+
 
 
 class DetailsActivity : BaseActivity(), OnMapReadyCallback {
@@ -143,6 +147,38 @@ class DetailsActivity : BaseActivity(), OnMapReadyCallback {
         deleteButton?.setOnClickListener { v ->
             viewModel.deleteData()
             finish()
+        }
+
+        txtNameCompany?.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                bgName?.background = ContextCompat.getDrawable(this, R.drawable.bg_focus_edittext)
+            } else {
+                bgName?.background = ContextCompat.getDrawable(this, R.drawable.bg_default_edittext)
+            }
+        }
+
+        txtAddress?.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                bgAddress?.background = ContextCompat.getDrawable(this, R.drawable.bg_focus_edittext)
+            } else {
+                bgAddress?.background = ContextCompat.getDrawable(this, R.drawable.bg_default_edittext)
+            }
+        }
+
+        txtCity?.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                bgCity?.background = ContextCompat.getDrawable(this, R.drawable.bg_focus_edittext)
+            } else {
+                bgCity?.background = ContextCompat.getDrawable(this, R.drawable.bg_default_edittext)
+            }
+        }
+
+        bgZipCode?.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                bgZipCode?.background = ContextCompat.getDrawable(this, R.drawable.bg_focus_edittext)
+            } else {
+                bgZipCode?.background = ContextCompat.getDrawable(this, R.drawable.bg_default_edittext)
+            }
         }
     }
 

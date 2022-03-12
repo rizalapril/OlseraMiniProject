@@ -140,8 +140,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
-                    android:paddingTop="10dp"
-                    android:paddingBottom="10dp"
                     android:orientation="horizontal"
                     android:weightSum="1"
                     android:background="@drawable/bg_default_edittext">
@@ -155,6 +153,8 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         android:layout_marginLeft="5dp"
                         android:layout_marginRight="5dp"
+                        android:paddingTop="10dp"
+                        android:paddingBottom="10dp"
                         android:background="@color/transparent"
                         android:fontFamily="sans-serif"
                         android:hint="Company name - Location"/>
@@ -236,8 +236,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
-                    android:paddingTop="10dp"
-                    android:paddingBottom="10dp"
                     android:orientation="horizontal"
                     android:weightSum="1"
                     android:background="@drawable/bg_default_edittext">
@@ -251,6 +249,8 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         android:layout_marginLeft="5dp"
                         android:layout_marginRight="5dp"
+                        android:paddingTop="10dp"
+                        android:paddingBottom="10dp"
                         android:background="@color/transparent"
                         android:fontFamily="sans-serif"
                         android:minLines="2"
@@ -279,8 +279,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
-                    android:paddingTop="10dp"
-                    android:paddingBottom="10dp"
                     android:orientation="horizontal"
                     android:weightSum="1"
                     android:background="@drawable/bg_default_edittext">
@@ -294,6 +292,8 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         android:layout_marginLeft="5dp"
                         android:layout_marginRight="5dp"
+                        android:paddingTop="10dp"
+                        android:paddingBottom="10dp"
                         android:background="@color/transparent"
                         android:fontFamily="sans-serif"
                         android:hint="city"/>
@@ -319,8 +319,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
-                    android:paddingTop="10dp"
-                    android:paddingBottom="10dp"
                     android:orientation="horizontal"
                     android:weightSum="1"
                     android:background="@drawable/bg_default_edittext">
@@ -334,6 +332,8 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         android:layout_marginLeft="5dp"
                         android:layout_marginRight="5dp"
+                        android:paddingTop="10dp"
+                        android:paddingBottom="10dp"
                         android:background="@color/transparent"
                         android:fontFamily="sans-serif"
                         android:hint="zip code"/>

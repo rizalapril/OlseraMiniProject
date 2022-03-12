@@ -258,7 +258,7 @@ class MainActivity : BaseActivity() {
 
         val offset = allStatusAdapter.itemCount
 
-        val limit = 15
+        val limit = 20
         lifecycleScope.launch(Dispatchers.IO){
             viewModel.getMoreAllData(limit, offset)
         }
@@ -273,7 +273,7 @@ class MainActivity : BaseActivity() {
 
         val offset = activeStatusAdapter.itemCount
 
-        val limit = 15
+        val limit = 20
         lifecycleScope.launch(Dispatchers.IO){
             viewModel.getMoreActiveData(limit, offset)
         }
@@ -288,7 +288,7 @@ class MainActivity : BaseActivity() {
 
         val offset = inactiveStatusAdapter.itemCount
 
-        val limit = 15
+        val limit = 20
         lifecycleScope.launch(Dispatchers.IO){
             viewModel.getMoreInactiveData(limit, offset)
         }
