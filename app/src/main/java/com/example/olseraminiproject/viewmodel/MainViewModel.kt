@@ -134,7 +134,7 @@ class MainViewModel(
 
     fun getMoreActiveData(limit: Int, offset: Int){
         viewModelScope.launch(Dispatchers.IO) {
-            val dataList = companyRepo.getLimitData(limit, offset)
+            val dataList = companyRepo.getLimitActiveData(limit, offset)
             if (dataList.size > 0){
                 convertIntoActiveList(dataList)
             }else{
@@ -146,7 +146,7 @@ class MainViewModel(
 
     fun getMoreInactiveData(limit: Int, offset: Int){
         viewModelScope.launch(Dispatchers.IO) {
-            val dataList = companyRepo.getLimitData(limit, offset)
+            val dataList = companyRepo.getLimitInactiveData(limit, offset)
             if (dataList.size > 0){
                 convertIntoInactiveList(dataList)
             }else{

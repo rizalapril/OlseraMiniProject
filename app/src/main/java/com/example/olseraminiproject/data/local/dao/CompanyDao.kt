@@ -11,6 +11,12 @@ interface CompanyDao {
     @Query("SELECT * FROM company ORDER BY id ASC LIMIT :limit OFFSET :offset")
     fun getCompanyList(limit: Int, offset: Int): List<Company>
 
+    @Query("SELECT * FROM company WHERE status = 1 ORDER BY id ASC LIMIT :limit OFFSET :offset")
+    fun getCompanyActiveList(limit: Int, offset: Int): List<Company>
+
+    @Query("SELECT * FROM company WHERE status = 0 ORDER BY id ASC LIMIT :limit OFFSET :offset")
+    fun getCompanyInactiveList(limit: Int, offset: Int): List<Company>
+
     @Query("SELECT * FROM company WHERE id=:companyId")
     fun getCompany(companyId: Int): Company
 

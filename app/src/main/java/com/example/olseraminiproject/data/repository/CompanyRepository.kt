@@ -12,6 +12,8 @@ interface CompanyRepository {
     fun getCompanyData(id: Int): Company
     fun getAllData(): List<Company>
     fun getLimitData(limit: Int, offset: Int): List<Company>
+    fun getLimitActiveData(limit: Int, offset: Int): List<Company>
+    fun getLimitInactiveData(limit: Int, offset: Int): List<Company>
     fun insertData(name: String, address: String, city: String, postalcode: String, latitude: String, longitude: String, status: Boolean)
     fun editData(id: Int, name: String, address: String, city: String, postalcode: String, latitude: String, longitude: String, status: Boolean)
     fun deleteData(id: Int)
@@ -55,6 +57,18 @@ class CompanyRepositoryImpl(
     override fun getLimitData(limit: Int, offset: Int): List<Company> {
         val db = initializeDB()
         val data = db.accessDAO().getCompanyList(limit, offset)
+        return data
+    }
+
+    override fun getLimitActiveData(limit: Int, offset: Int): List<Company> {
+        val db = initializeDB()
+        val data = db.accessDAO().getCompanyActiveList(limit, offset)
+        return data
+    }
+
+    override fun getLimitInactiveData(limit: Int, offset: Int): List<Company> {
+        val db = initializeDB()
+        val data = db.accessDAO().getCompanyInactiveList(limit, offset)
         return data
     }
 
