@@ -11,5 +11,6 @@
     <color name="line">#BDBDBD</color>
     <color name="blue">#2A74F3</color>
     <color name="blue_selected">#4AC1E5</color>
+    <color name="transparent">#00FFFFFF</color>
 
 </resources>
