@@ -1,11 +1,10 @@
-package com.example.olseraminiproject.view
+package com.example.olseraminiproject
 
 import android.os.Bundle
-import com.example.olseraminiproject.R
 import com.example.olseraminiproject.base.BaseActivity
 
-class MainActivity : BaseActivity() {
-    override fun getLayoutResourceId(): Int = R.layout.activity_main
+class DetailsActivity : BaseActivity() {
+    override fun getLayoutResourceId(): Int = R.layout.activity_details
 
     override fun initView(savedInstanceState: Bundle?) {
     }
